@@ -1,9 +1,40 @@
 import os
-import dj_database_url
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# =========================
+# SECURITY
+# =========================
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-key")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".railway.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
+
+# =========================
+# DATABASE (CRITICAL FIX)
+# =========================
+
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+    )
+}
+
+# =========================
+# APPS
+# =========================
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -14,6 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'site_invation.apps.SiteInvationConfig',
 ]
+
+# =========================
+# MIDDLEWARE
+# =========================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -26,7 +61,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# =========================
+# URL / WSGI
+# =========================
+
 ROOT_URLCONF = 'Wedding_invitation.urls'
+WSGI_APPLICATION = 'Wedding_invitation.wsgi.application'
+
+# =========================
+# TEMPLATES
+# =========================
 
 TEMPLATES = [
     {
@@ -43,67 +87,49 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Wedding_invitation.wsgi.application'
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG", "False") == "True"
-
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".railway.app",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app",
-]
-
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600
-    )
-}
+# =========================
+# PASSWORD VALIDATION
+# =========================
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# =========================
+# LANGUAGE / TIME
+# =========================
+
 LANGUAGE_CODE = 'ru'
-
 TIME_ZONE = 'Europe/Moscow'
-
 USE_I18N = True
-
 USE_TZ = True
 
-STATIC_URL = 'static/'
-STATIC_ROOT = (BASE_DIR / 'staticfiles')
+# =========================
+# STATIC (IMPORTANT FOR ADMIN CSS)
+# =========================
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_ROOT = (BASE_DIR / 'media')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# =========================
+# MEDIA
+# =========================
+
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# =========================
+# SECURITY (RAILWAY)
+# =========================
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
 USE_X_FORWARDED_HOST = True
-
 SESSION_COOKIE_SECURE = True
-
 CSRF_COOKIE_SECURE = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
