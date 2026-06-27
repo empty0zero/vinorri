@@ -26,8 +26,6 @@ SECRET_KEY = 'django-insecure-!ff#+a@13n_r@k$f8^f2jlm+32w@gs=28ot0trxzj57y=hhz0#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -78,11 +76,23 @@ WSGI_APPLICATION = 'Wedding_invitation.wsgi.application'
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".railway.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
 
 DATABASES = {
-        "default": dj_database_url.parse(os.environ["DATABASE_URL"])
-    }
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 
 
 # Password validation
@@ -133,3 +143,11 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+USE_X_FORWARDED_HOST = True
+
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = True

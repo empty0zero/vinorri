@@ -1,1 +1,1 @@
-web: gunicorn Wedding_invitation.wsgi
+web: python manage.py migrate && python manage.py collectstatic --noinput && gunicorn Wedding_invitation.wsgi
