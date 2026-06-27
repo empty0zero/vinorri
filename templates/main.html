@@ -1,0 +1,264 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Свадебное приглашение</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<section class="hero">
+    <img class="hero-bg" src="{% static 'images/DSC07477.jpg' %}" alt="Свадьба фон">
+
+    <div class="hero-overlay">
+        <div class="hero-text">
+            <h1>Приглашение на свадьбу Алексея и Евгении</h1>
+            <p>
+                Дорогие друзья и родные,<br>
+                будем счастливы разделить с вами<br>
+                самый важный день нашей жизни
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="date">
+    <div class="content">
+        <h2>Дата проведения - 5 сентября 2026 года</h2>
+        <img src="{% static 'images/календарь-гиф.gif' %}" alt="Дата свадьбы" class="calendar">
+    </div>
+</section>
+
+<section class="location">
+    <div class="content">
+        <h1>Место проведения</h1>
+
+        <div class="map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2755.266986041541!2d48.0440326!3d46.3243934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x41a90fee6442ca33%3A0xfa650e67d3315235!2z0J_RgNC10LzQuNGD0LwsINCR0LDQvdC60LXRgtC90YvQuSDQl9Cw0Ls!5e0!3m2!1sru!2sde!4v1782393337688!5m2!1sru!2sde" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+    </div>
+</section>
+
+<section class="timeline">
+    <div class="content">
+        <h1>Тайминг дня</h1>
+
+        <div class="timeline-items">
+            <div class="timeline-item">
+                <span>17:00</span>
+                <p>Сбор гостей</p>
+            </div>
+            <div class="timeline-item">
+                <span>18:00</span>
+                <p>Начало банкета</p>
+            </div>
+            <div class="timeline-item">
+                <span>21:00</span>
+                <p>Натанцеваться в доволь</p>
+            </div>
+            <div class="timeline-item">
+                <span>22:00</span>
+                <p>Ужраться в усмерть</p>
+            </div>
+            <div class="timeline-item">
+                <span>23:00</span>
+                <p>Окончание вечера</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="details">
+    <div class="content">
+        <p>
+            Для нас самое главное — ваше присутствие 🩵<br>
+            А если вы захотите сделать подарок,<br>
+            конверт будет лучшим вариантом.
+        </p>
+    </div>
+</section>
+
+<section class="form-section" id="form">
+    <div class="content">
+        <h1>Пожалуйста, заполни анкету<br>
+            Если с тобой придет кто-то еще - используй кнопку "Добавить гостя"
+        </h1>
+
+        {% if success %}
+            <div class="success">
+                Спасибо, {{ guest_name }}! Мы очень рады 🩵
+            </div>
+        {% endif %}
+
+        <form method="post" id="guest-form" novalidate action="#form">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="error" style="margin-bottom: 12px; color: brown;">
+                    <b>Пожалуйста, овтеть на вопрос о своем присутвии</b>
+                </div>
+            {% endif %}
+
+            {% for hidden in formset.management_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
+            <div class="field" id="main-name-fields">
+                <div class="field">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="error" style="margin-top: 6px;">{{ form.first_name.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="error" style="margin-top: 6px;">{{ form.last_name.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="field" id="consent-field">
+                {{ form.consent.label_tag }}
+                <div class="radio-group" id="consent-radio-group">
+                    {% for radio in form.consent %}
+                        {{ radio.tag }}
+                        <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    {% endfor %}
+                </div>
+                {% if form.consent.errors %}
+                    <div class="error" style="margin-top: 8px;">
+                        {{ form.consent.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div id="optional-fields">
+                <div class="field" id="alcohol-field">
+                    {{ form.alcohol.label_tag }}
+                    <div class="checkbox-group">
+                        {% for checkbox in form.alcohol %}
+                            <label class="checkbox-card" for="{{ checkbox.id_for_label }}">
+                                {{ checkbox.tag }}
+                                <span>{{ checkbox.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.alcohol.errors %}
+                        <div class="error" style="margin-top: 8px;">
+                            {{ form.alcohol.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="field" style="margin-top: 24px;">
+                    <div id="guests-forms">
+                        {% for f in formset %}
+                            <div class="guest-form" style="margin-bottom: 12px;">
+                                <div class="field">
+                                    {{ f.first_name.label_tag }}
+                                    {{ f.first_name }}
+                                    {% if f.first_name.errors %}
+                                        <div class="error" style="margin-top: 6px;">{{ f.first_name.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="field">
+                                    {{ f.last_name.label_tag }}
+                                    {{ f.last_name }}
+                                    {% if f.last_name.errors %}
+                                        <div class="error" style="margin-top: 6px;">{{ f.last_name.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+
+                                {% if f.DELETE %}
+                                    <div class="field" style="display:none;">
+                                        {{ f.DELETE }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" id="add-guest" style="margin-top: 8px;">
+                        Добавить гостя
+                    </button>
+
+                    <div id="empty-form" style="display:none;">
+                        <div class="guest-form" style="margin-bottom: 12px;">
+                            <div class="field">
+                                {{ formset.empty_form.first_name.label_tag }}
+                                {{ formset.empty_form.first_name }}
+                            </div>
+                            <div class="field">
+                                {{ formset.empty_form.last_name.label_tag }}
+                                {{ formset.empty_form.last_name }}
+                            </div>
+                            {% if formset.empty_form.DELETE %}
+                                <div class="field" style="display:none;">
+                                    {{ formset.empty_form.DELETE }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-btn">Отправить</button>
+        </form>
+    </div>
+</section>
+
+<script>
+  const prefix = "{{ formset.prefix }}";
+
+  const optionalBlock = document.getElementById("optional-fields");
+  const addGuestBtn = document.getElementById("add-guest");
+
+  function getConsentValue() {
+    const checked = document.querySelector('input[name="consent"]:checked') ||
+                    document.querySelector('#consent-radio-group input[type="radio"]:checked');
+    return checked ? checked.value : null;
+  }
+
+  function setOptionalVisibility() {
+    const val = getConsentValue();
+    const isNo = (val === "False" || val === "false" || val === "0");
+
+    if (isNo) {
+      optionalBlock.style.display = "none";
+      document.querySelectorAll('#alcohol-field input[type="checkbox"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('#guests-forms input[type="text"]').forEach(inp => inp.value = "");
+    } else {
+      optionalBlock.style.display = "";
+    }
+  }
+
+  if (addGuestBtn) {
+    addGuestBtn.addEventListener("click", () => {
+      const totalFormsInput = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+      if (!totalFormsInput) return;
+
+      const formCount = parseInt(totalFormsInput.value, 10);
+      const emptyFormContainer = document.getElementById("empty-form");
+      let html = emptyFormContainer.innerHTML;
+
+      html = html.replaceAll(`${prefix}-__prefix__-`, `${prefix}-${formCount}-`);
+      html = html.replaceAll(`id_${prefix}-__prefix__-`, `id_${prefix}-${formCount}-`);
+
+      document.getElementById("guests-forms").insertAdjacentHTML("beforeend", html);
+      totalFormsInput.value = formCount + 1;
+    });
+  }
+
+  document.getElementById("consent-radio-group").addEventListener("change", setOptionalVisibility);
+  setOptionalVisibility();
+</script>
+
+</body>
+</html>

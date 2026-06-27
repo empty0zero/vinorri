@@ -1,0 +1,1 @@
+web: gunicorn Wedding_invitation.wsgi
